@@ -1,0 +1,31 @@
+# 開発環境用
+
+version: '3'
+services:
+  server:
+    build:
+      context: ./docker/nginx/
+      dockerfile: Dockerfile
+    tty: true
+    depends_on:
+      - app
+    ports: # host:guest
+      - "80:80"
+    volumes:
+      - ./docker/nginx/log:/var/log/nginx # ログ
+      - ./docker/sock:/var/run/sock # ソケット ローカル←→nginx
+      - ./docker/nginx/conf.d.dev:/etc/nginx/conf.d # nginxの設定ファイル
+
+  app:
+    build:
+      context: ./docker/python/
+      dockerfile: Dockerfile
+    tty: true
+    environment:
+      - DB_PATH=/home/db.sqlite3
+      - DJAGO_ENV=dev
+    volumes:
+      - ./src:/home/
+      - ./docker/python/log/fastapi:/var/log/fastapi
+      - ./docker/python/log/django:/var/log/django
+      - ./docker/sock:/var/run/sock

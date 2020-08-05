@@ -1,0 +1,42 @@
+# 本番用
+
+version: '3'
+services:
+  server:
+    build:
+      context: ./docker/nginx/
+      dockerfile: Dockerfile
+    tty: true
+    depends_on:
+      - app
+    ports: # host:guest
+      - "80:80"
+    volumes:
+      - ./docker/nginx/log:/var/log/nginx # ログ
+      - ./docker/sock:/var/run/sock # ソケット ローカル←→nginx
+      - ./docker/nginx/conf.d.prod:/etc/nginx/conf.d # nginxの設定ファイル
+      - ./src/auth/static:/var/www/static
+
+  app:
+    build:
+      context: ./docker/python/
+      dockerfile: Dockerfile
+    tty: true
+    command: >
+      sh -c "
+        cd /home/app &&
+        poetry run poetry install &&
+        nohup poetry run gunicorn main:app -c gunicorn.py --reload > /dev/null 2>&1 &
+        cd /home/auth &&
+        poetry run poetry install &&
+        poetry run python manage.py migrate &&
+        poetry run gunicorn config.wsgi -c gunicorn.py --reload
+      "
+    environment:
+      - DB_PATH=/home/db.sqlite3
+      - DJAGO_ENV=production
+    volumes:
+      - ./src:/home
+      - ./docker/sock:/var/run/sock # ソケット ローカル←→fastai
+      - ./docker/python/log/fastapi:/var/log/fastapi
+      - ./docker/python/log/django:/var/log/django
