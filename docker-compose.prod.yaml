@@ -24,13 +24,12 @@ services:
     tty: true
     command: >
       sh -c "
+        poetry run poetry install &&
         cd /home/app &&
-        poetry run poetry install &&
-        nohup poetry run gunicorn main:app -c gunicorn.py --reload > /dev/null 2>&1 &
+        nohup poetry run gunicorn main:app -c gunicorn.py > /dev/null 2>&1 &
         cd /home/auth &&
-        poetry run poetry install &&
         poetry run python manage.py migrate &&
-        poetry run gunicorn config.wsgi -c gunicorn.py --reload
+        poetry run gunicorn config.wsgi -c gunicorn.py
       "
     environment:
       - DB_PATH=/home/db.sqlite3

@@ -10,22 +10,12 @@ docker-compose exec app sh
 
 # FastAPIのプロジェクトの環境構築
 cd /home/app
-source .venv/bin/activate
-poetry env use .venv/bin/python
-poetry install
-
-# venvから抜ける
-deactivate
+poetry run poetry install
 
 # Djangoのプロジェクトの環境構築
 cd /home/auth
-source .venv/bin/activate
-poetry env use .venv/bin/python
-poetry install
-python manage.py migrate
-
-# venvから抜ける
-deactivate
+poetry run poetry install
+poetry run python manage.py migrate
 
 # 管理画面を起動
 cd /home/auth
