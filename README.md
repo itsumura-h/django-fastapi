@@ -8,21 +8,17 @@ docker-compose build
 docker-compose up -d
 docker-compose exec app sh
 
-# FastAPIのプロジェクトの環境構築
-cd /home/app
+# プロジェクトの環境構築
+cd /home
 poetry run poetry install
-
-# Djangoのプロジェクトの環境構築
-cd /home/auth
-poetry run poetry install
-poetry run python manage.py migrate
-
-# 管理画面を起動
-cd /home/auth
-make dev
 
 # アプリケーションを起動
 cd /home/app
+make dev
+
+# 管理画面を起動
+cd /home/auth
+poetry run python manage.py migrate
 make dev
 ```
 
