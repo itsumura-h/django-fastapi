@@ -8,10 +8,6 @@ docker-compose build
 docker-compose up -d
 docker-compose exec app sh
 
-# プロジェクトの環境構築
-cd /home
-poetry run poetry install
-
 # アプリケーションを起動
 cd /home/app
 make dev
@@ -36,12 +32,5 @@ VSCode左下の「><」をクリックして、コンテナに接続する。
 ## 補完が効くようにする。
 
 VSCodeに`Python`の拡張機能を入れる。  
-コンテナ内で`/app/src`ディレクトリを開く。
-
-```bash
-poetry install
-```
-を実行する。
-
-プロジェクトディレクトリ内に`.venv`という仮想環境のディレクトリが作られるので、  
-VSCodeの下にある「Select python interpreter」をクリックし、「Enter interpreter path」を選択し、`/app/src/.venv/bin/python3`を選ぶ。
+VSCodeの下にある「Select python interpreter」をクリックし、「Enter interpreter path」を選択し、`/root/.cache/pypoetry/virtualenvs/home-********-py3.8/bin/python3`を選ぶ。  
+※　`********` は乱数

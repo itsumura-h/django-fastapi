@@ -4,8 +4,8 @@ version: '3'
 services:
   server:
     build:
-      context: ./docker/nginx/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
     tty: true
     depends_on:
       - app
@@ -18,8 +18,8 @@ services:
 
   app:
     build:
-      context: ./docker/python/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./docker/python/Dockerfile
     tty: true
     environment:
       - DB_PATH=/home/db.sqlite3

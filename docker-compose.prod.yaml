@@ -4,8 +4,8 @@ version: '3'
 services:
   server:
     build:
-      context: ./docker/nginx/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
     tty: true
     depends_on:
       - app
@@ -19,12 +19,11 @@ services:
 
   app:
     build:
-      context: ./docker/python/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./docker/python/Dockerfile
     tty: true
     command: >
       sh -c "
-        poetry run poetry install &&
         cd /home/app &&
         nohup poetry run gunicorn main:app -c gunicorn.py > /dev/null 2>&1 &
         cd /home/auth &&
