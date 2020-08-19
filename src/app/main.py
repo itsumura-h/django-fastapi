@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, Request
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, JSONResponse
 from app.db import db
 # controller
 from app.controllers import (
@@ -16,12 +16,26 @@ async def check_login(request: Request, call_next):
     """Cookieからsessionidを取得し、django_sessionテーブルに存在すればログイン済み→素通り
         そうでなければ/admin/loginにリダイレクト
     """
-    if 'sessionid' not in request.cookies:
-        return RedirectResponse('/admin/login/')
+    # ブラウザからアクセスされた時
+    if 'Mozilla' in request.headers['user-agent']:
+        if 'sessionid' not in request.cookies:
+            return RedirectResponse('/admin/login/')
 
-    session_id = request.cookies['sessionid']
-    if db.table('django_session').where('session_key', session_id).count() == 0:
-        return RedirectResponse('/admin/login/')
+        session_id = request.cookies['sessionid']
+        if db.table('django_session').where('session_key', session_id).count() == 0:
+            return RedirectResponse('/admin/login/')
+    # APIからアクセスされた時
+    else:
+        if 'sessionid' not in request.cookies:
+            response = JSONResponse({})
+            response.status_code = 403
+            return response
+
+        session_id = request.cookies['sessionid']
+        if db.table('django_session').where('session_key', session_id).count() == 0:
+            response = JSONResponse({})
+            response.status_code = 403
+            return response
 
     response = await call_next(request)
     return response
